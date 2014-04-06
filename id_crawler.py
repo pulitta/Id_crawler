@@ -1,14 +1,7 @@
 import time
 import requests
-#from BeautifulSoup import BeautifulSoup
-
 from pyquery import PyQuery
- 
 import threading
-import libxml2
-
-#import socket
-#socket.setdefaulttimeout(10)
 
 web = 'https://www.vk.com/catalog.php'
 vk = 'https://www.vk.com/'
@@ -88,14 +81,19 @@ def get_ids(interval_beg, interval_end, million, thousand, hundred, file_name):
                     catalog_code = str(million_counter) + '-' + str(thousand_counter) + '-' + str(hundred_counter) 
                     page_addr = vk + selection + catalog_code
                   
-                    #html = get_html_page(page_addr)
+                    html = get_html_page(page_addr)
                 
-#                     if html != None:
-#                         file_for_id.write(catalog_code + "\n")
-#                         file_for_id.flush()
-#                         hundred_counter += 1
-#                     else:
-#                         print "Invalid page: '" + page_addr + "'"
+                    if html != None:
+                        strids = ""
+                        for link in html.find('a'):
+                            if link.get('href').startswith('id'):
+                                #id = link.get('href')
+                                strids += (link.get('href')+', ')
+                        file_for_id.write(strids)
+                        file_for_id.flush()
+                        hundred_counter += 1
+                    else:
+                        print "Invalid page: '" + page_addr + "'"
                             
                 except requests.ConnectionError:
                     print "Connection error at '" + page_addr + "'"
@@ -107,9 +105,9 @@ def get_ids(interval_beg, interval_end, million, thousand, hundred, file_name):
 
 def multithreading(count_of_thread):
     
-    #million, thousand, hundred = parse_of_last_id(search_of_last_page(web))
+    million, thousand_of_end, hundred_of_end = parse_of_last_id(search_of_last_page(web))
     
-    million  = 99
+#     million  = 99
     thousand = 99
     hundred  = 99
     
@@ -128,6 +126,10 @@ def multithreading(count_of_thread):
         int_beg = intervals[current_count_of_thread];
         int_end = intervals[current_count_of_thread + 1];
         
+        if int_end == million:
+            thousand = thousand_of_end
+            hundred = hundred_of_end
+            
         print int_beg, int_end, million, thousand, hundred, file_name
              
         thread = threading.Thread(target=get_ids, args=(int_beg, int_end, million, thousand, hundred, file_name))
