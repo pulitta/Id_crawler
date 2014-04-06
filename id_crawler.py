@@ -164,7 +164,3 @@ def save_ids_in_one_file(count_of_thread):
     return final_file
 
 save_ids_in_one_file(4)
-# request_to_vk = requests.get('https://www.vk.com/catalog.php')
-# request_to_vk = ' v'
-# #print request_to_vk.status_code
-# print BeautifulSoup(request_to_vk.text)
